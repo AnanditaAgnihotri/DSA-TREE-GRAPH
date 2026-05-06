@@ -8,7 +8,7 @@ typedef struct btree{
  }*node;
  node insert(node bt,int num);
  void inorder(node bt);
- node locate(node bt,int num,node parent,node x,int v);
+ node findmin(node bt);
  node del(node bt,int num);
  int main()
 {
@@ -44,58 +44,53 @@ node insert(node bt,int num){
     }
     return bt;
 }
-node del(node bt,int num){
-    node x,parent,xsucc;
-    int c=0;
-    if(bt!=NULL){
-        locate(bt,num,parent,x,c);
-        if(c==1){
-            if(x->lc!=NULL & x->rc!=NULL){
-                xsucc=x->rc;
-                parent=x;
-                while(xsucc->lc!=NULL){
-                        parent=xsucc;
-                    xsucc=xsucc->lc;
-                }
-                x->data=xsucc->data;
-                x=xsucc;
-            }
-            //for no children root
-            if(x->lc==NULL && x->rc==NULL){
-            if(num==parent->rc){
-                parent->rc==NULL;
-            }
-            else
-                parent->lc==NULL;
-            free(x);
-            return;
-        }
-        else if(x->lc==NULL && x->rc!=NULL){
-                if(parent->lc==num){
-
-                }
-            parent->rc=x->rc;
-        }
-    }
-}
-node locate(node bt,int num,node parent,node x,int v){
-    node q=bt;
-    while(q!=NULL){
-    if(q->data==num){
-        x=q;
-        v=1;
-        return v;
-    }
-      parent=q;
-    if(num<q->data){
-        q=q->lc;
-    }
-    else{
-        q=q->rc;
-    }}}
 void inorder(node bt) {
-    //if (bt == NULL)
+    if (bt == NULL)
+        return;
     inorder(bt->lc);
     printf("%d ", bt->data);
     inorder(bt->rc);
 }
+node del(node bt,int num){
+    node temp=NULL;
+    if(bt==NULL)
+        return;
+    else if(num<bt->data){
+        bt->lc=del(bt->lc,num);
+    }
+    else if(num>bt->data){
+        bt->rc=del(bt->rc,num);
+    }
+    else{
+        //csae1 no kids
+        if(bt->rc==NULL && bt->lc==NULL){
+            free(bt);
+            return NULL;
+        }
+        //only rc
+        else  if(bt->lc==NULL){
+            temp=bt->rc;
+            free(bt);
+            return temp;
+        }
+        //only lc
+        else if(bt->rc==NULL){
+            temp=bt->lc;
+            free(bt);
+            return temp;
+        }
+        //both rc and lc
+
+            temp=findmin(bt->rc);
+            bt->data=temp->data;
+            bt->rc=del(bt->rc,temp->data);
+       }
+       return bt ;
+    }
+node findmin(node bt){
+    while(bt->lc!=NULL){
+        bt=bt->lc;
+    }
+    return bt;
+}
+
