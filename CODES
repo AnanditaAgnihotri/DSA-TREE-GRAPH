@@ -1,0 +1,101 @@
+//QUESTION1
+
+#include<stdio.h>
+#include <stdlib.h>
+
+typedef struct btree{
+ struct btree *lc;
+ int data;
+ struct btree *rc;
+ }*node;
+ node insert(node bt,int num);
+ void inorder(node bt);
+ node findmin(node bt);
+ node del(node bt,int num);
+ int main()
+{
+    int n,xin,xd,a[50];
+    node bt=NULL;
+    scanf("%d",&n);
+    for(int i=0;i<n;i++){
+        scanf("%d",&a[i]);
+    }
+    for(int i=0;i<n;i++){
+        bt=insert(bt,a[i]);
+    }
+    inorder(bt);
+    scanf("%d",&xin);
+    bt=insert(bt,xin);
+    inorder(bt);
+    scanf("%d",&xd);
+    bt=del(bt,xd);
+    inorder(bt);
+}
+node insert(node bt,int num){
+    if(bt==NULL){
+        bt=(node)malloc(sizeof(struct btree));
+        bt->data=num;
+        bt->lc=NULL;
+        bt->rc=NULL;
+    }
+    else if(num<bt->data){
+        bt->lc=insert(bt->lc,num);
+    }
+    else{
+        bt->rc=insert(bt->rc,num);
+    }
+    return bt;
+}
+void inorder(node bt) {
+    if (bt == NULL)
+        return;
+    inorder(bt->lc);
+    printf("%d ", bt->data);
+    inorder(bt->rc);
+}
+node del(node bt,int num){
+    node temp=NULL;
+    if(bt==NULL)
+        return;
+    else if(num<bt->data){
+        bt->lc=del(bt->lc,num);
+    }
+    else if(num>bt->data){
+        bt->rc=del(bt->rc,num);
+    }
+    else{
+        //csae1 no kids
+        if(bt->rc==NULL && bt->lc==NULL){
+            free(bt);
+            return NULL;
+        }
+        //only rc
+        else  if(bt->lc==NULL){
+            temp=bt->rc;
+            free(bt);
+            return temp;
+        }
+        //only lc
+        else if(bt->rc==NULL){
+            temp=bt->lc;
+            free(bt);
+            return temp;
+        }
+        //both rc and lc
+
+            temp=findmin(bt->rc);
+            bt->data=temp->data;
+            bt->rc=del(bt->rc,temp->data);
+       }
+       return bt ;
+    }
+node findmin(node bt){
+    while(bt->lc!=NULL){
+        bt=bt->lc;
+    }
+    return bt;
+}
+
+
+//QUESTION2
+//QUESTION3
